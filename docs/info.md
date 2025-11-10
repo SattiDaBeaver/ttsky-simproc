@@ -9,12 +9,13 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+Send 3 byte packets through UART, program SimProc, read memory data / SimProc data through UART
 
 ## How to test
 
-Explain how to use your project
+Send commands using the UART RX pin (using a USB to UART conveter), receive data through the UART TX pin.
+Set UIO7-UIO0 to set the BAUD rate of the internal UART module.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+A USB to UART converter or any UART device.
