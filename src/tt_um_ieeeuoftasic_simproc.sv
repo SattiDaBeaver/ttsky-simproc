@@ -5,7 +5,7 @@
 
 `default_nettype none
 
-module tt_um_example (
+module tt_um_ieeeuoftasic_simproc (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -17,11 +17,33 @@ module tt_um_example (
 );
 
   // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+  wire rst;
+  wire [9:0] clk_per_bit;
+
+  assign clk_per_bit = {uio_in[7:0], 2'b00}; // set upper 8 bits
+  
+  
+  assign rst = ~rst_n;
+  assign uio_oe = 8'b0000_0000; // set bidirectional as inputs
+  assign uio_out = 8'b0000_0000; // set unused bidirectional outputs to LOW
+  assign uo_out[7:3] = 5'b0_0000; // set unused outputs to LOW
+
+  simproc_system #(
+     .CLK_BITS(10)
+  ) U1 (
+      .clk(clk),
+      .rst(rst),
+
+      .clk_per_bit(clk_per_bit),
+      .uart_rx(ui_in[0]),
+
+      .uart_tx(uo_out[0]),
+
+      .halt(uo_out[1]),
+      .done(uo_out[2])
+  );
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+  wire _unused = &{ui_in[7:1], ena, 1'b0};
 
 endmodule
